@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "name": "aos-local",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "repository": "https://github.com/twilson63/aos-local.git",
+  "author": "Tom Wilson <tom@hyper.io>",
+  "license": "MIT",
+  "dependencies": {
+    "@permaweb/ao-loader": "^0.0.43",
+    "hyper-async": "^1.1.2"
+  }
+}
