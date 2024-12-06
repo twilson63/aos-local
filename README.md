@@ -6,7 +6,7 @@ A module that can be used to run commands against aos instances in a local envir
 
 ```js
 import fs from 'fs'
-import { aoslocal, SQLITE } from '@permaweb/aos-local'
+import { aoslocal, SQLITE } from '@permaweb/loco'
 const src = './src/main.lua'
 const aos = await aoslocal(src, SQLITE)
 
@@ -17,7 +17,7 @@ console.log(result.Output.data)
 
 ## API
 
-### load(pId : String)
+### load(processId : String)
 
 loads latest checkpoint into a process for evals
 

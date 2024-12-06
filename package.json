@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "aos-local",
+  "name": "@permaweb/loco",
   "version": "0.0.1",
   "main": "src/index.js",
   "repository": "https://github.com/twilson63/aos-local.git",
