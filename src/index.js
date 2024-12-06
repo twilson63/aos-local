@@ -1,11 +1,13 @@
 import fs from 'fs'
 import AoLoader from '@permaweb/ao-loader'
 import Async from 'hyper-async'
+import { fetchCheckpoint, getCheckpointTx } from './checkpoint.js'
 
 const { of, fromPromise } = Async
 
 const WASM64 = {
   format: "wasm64-unknown-emscripten-draft_2024_02_15",
+  memoryLimit: "4294967296"
 }
 
 const DEFAULT_ENV = {
@@ -17,7 +19,7 @@ const DEFAULT_ENV = {
       { name: "Type", value: "Process" },
       { name: "Authority", value: "OWNER" }
     ],
-    Owner: "OWNER"
+    Owner: "OWNER",
   },
   Module: {
     Id: "TESTING_ID",
@@ -40,7 +42,7 @@ export let LATEST = "module"
  */
 export async function aoslocal(source, aosmodule = LATEST) {
 
-  const src = fs.readFileSync(source, 'utf-8')
+  const src = source ? fs.readFileSync(source, 'utf-8') : null
 
   const mod = await fetch('https://raw.githubusercontent.com/permaweb/aos/refs/heads/main/package.json')
     .then(res => res.json())
@@ -56,13 +58,23 @@ export async function aoslocal(source, aosmodule = LATEST) {
   }
 
   // load src
-  await of({ expr: src, env: DEFAULT_ENV })
-    .map(formatEval)
-    .chain(handle(binary, memory))
-    .map(updateMemory)
-    .toPromise()
+  if (src) {
+    await of({ expr: src, env: DEFAULT_ENV })
+      .map(formatEval)
+      .chain(handle(binary, memory))
+      .map(updateMemory)
+      .toPromise()
+  }
 
   return {
+    load: (pid) => of(pid)
+      .chain(fromPromise(getCheckpointTx))
+      .chain(fromPromise(fetchCheckpoint))
+      .map(m => {
+        memory = m
+        return true
+      })
+      .toPromise(),
     eval: (expr, env = DEFAULT_ENV) => of({ expr, env })
       .map(formatEval)
       .chain(handle(binary, memory))
@@ -99,15 +111,19 @@ function formatEval(ctx) {
 
 function formatAOS(ctx) {
   const aoMsg = {
+    Id: "MESSAGE_ID",
     Target: ctx.msg?.Target || DEFAULT_ENV.Process.Id,
     Owner: ctx.msg?.Owner || DEFAULT_ENV.Process.Owner,
     Data: ctx.msg?.Data || "",
+    Module: "MODULE",
+    ["Block-Height"]: "1",
+    From: "OWNER",
     Tags: Object
       .keys(ctx.msg)
       .filter(k => !["Target", "Owner", "Data", "Anchor", "Tags"].includes(k))
       .map(k => ({ name: k, value: ctx.msg[k] }))
   }
-  console.log(aoMsg)
+  //console.log(aoMsg)
   ctx.msg = aoMsg
   return ctx
 }

@@ -17,6 +17,10 @@ console.log(result.Output.data)
 
 ## API
 
+### load(pId : String)
+
+loads latest checkpoint into a process for evals
+
 ### eval(expression : String) : async(AOS_Result)
 
 evaluates an expression and returns an AOS Result Object
