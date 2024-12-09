@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@permaweb/loco",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "src/index.js",
   "repository": "https://github.com/twilson63/aos-local.git",
   "author": "Tom Wilson <tom@hyper.io>",
