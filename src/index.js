@@ -125,7 +125,7 @@ function formatAOS(ctx) {
     Data: ctx.msg?.Data || "",
     Module: "MODULE",
     ["Block-Height"]: "1",
-    From: "OWNER",
+    From: ctx.msg?.From || ctx.msg?.Owner || DEFAULT_ENV.Process.Owner,
     Tags: Object
       .keys(ctx.msg)
       .filter(k => !["Target", "Owner", "Data", "Anchor", "Tags"].includes(k))
