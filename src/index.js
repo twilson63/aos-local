@@ -2,6 +2,7 @@ import fs from 'fs'
 import AoLoader from '@permaweb/ao-loader'
 import Async from 'hyper-async'
 import { fetchCheckpoint, getCheckpointTx } from './checkpoint.js'
+import { pack } from './pack-lua.js'
 
 const { of, fromPromise } = Async
 
@@ -42,7 +43,7 @@ export let LATEST = "module"
  */
 export async function aoslocal(source, aosmodule = LATEST) {
 
-  const src = source ? fs.readFileSync(source, 'utf-8') : null
+  const src = source ? pack(source, 'utf-8') : null
 
   const mod = await fetch('https://raw.githubusercontent.com/permaweb/aos/refs/heads/main/package.json')
     .then(res => res.json())
