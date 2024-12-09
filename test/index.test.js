@@ -2,7 +2,8 @@ import { aoslocal, SQLITE } from '../src/index.js'
 
 async function main() {
   try {
-    const aos = await aoslocal("./test/example.lua", SQLITE)
+    const aos = await aoslocal(SQLITE)
+    await aos.src("./test/example.lua")
     // await aos.send({
     //   Target: "TEST_PROCESS_ID",
     //   Owner: "OWNER",

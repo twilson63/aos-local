@@ -38,12 +38,11 @@ export let LLAMA = "llama"
 export let LATEST = "module"
 
 /**
- * @param {string} source - filename to source file
  * @param {string} aosmodule - module label or txId to wasm binary
  */
-export async function aoslocal(source, aosmodule = LATEST) {
+export async function aoslocal(aosmodule = LATEST) {
 
-  const src = source ? pack(source, 'utf-8') : null
+  // const src = source ? pack(source, 'utf-8') : null
 
   const mod = await fetch('https://raw.githubusercontent.com/permaweb/aos/refs/heads/main/package.json')
     .then(res => res.json())
@@ -59,15 +58,23 @@ export async function aoslocal(source, aosmodule = LATEST) {
   }
 
   // load src
-  if (src) {
-    await of({ expr: src, env: DEFAULT_ENV })
-      .map(formatEval)
-      .chain(handle(binary, memory))
-      .map(updateMemory)
-      .toPromise()
-  }
+  // if (src) {
+  //   await of({ expr: src, env: DEFAULT_ENV })
+  //     .map(formatEval)
+  //     .chain(handle(binary, memory))
+  //     .map(updateMemory)
+  //     .toPromise()
+  // }
 
   return {
+    src: (srcFile) =>
+      of(srcFile)
+        .map(pack)
+        .map(src => ({ expr: src, env: DEFAULT_ENV }))
+        .map(formatEval)
+        .chain(handle(binary, memory))
+        .map(updateMemory)
+        .toPromise(),
     load: (pid) => of(pid)
       .chain(fromPromise(getCheckpointTx))
       .chain(fromPromise(fetchCheckpoint))
