@@ -47,7 +47,7 @@ export function createExecutableFromProject(project) {
  * @param {string} mainFile
  * @return {Module[]}
  */
-export function pack(mainFile) {
+export function createProjectStructure(mainFile) {
   const sorted = []
   const cwd = path.dirname(mainFile)
 
@@ -106,4 +106,10 @@ function exploreNodes(node, cwd) {
   ) || []
 
   return requiredModules
+}
+
+export function pack(startFile) {
+  const projectStructure = createProjectStructure(startFile)
+  const [executable, modules] = createExecutableFromProject(projectStructure)
+  return executable
 }

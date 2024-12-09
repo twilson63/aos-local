@@ -1,4 +1,6 @@
+local greeting = require("example2")
+
 function Hello(name)
   BEEP = name
-  print("Hello " .. name)
+  print(greeting .. " " .. name)
 end
