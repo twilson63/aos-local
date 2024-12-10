@@ -3,10 +3,11 @@ import AoLoader from '@permaweb/ao-loader'
 import Async from 'hyper-async'
 import { fetchCheckpoint, getCheckpointTx } from './checkpoint.js'
 import { pack } from './pack-lua.js'
+import weaveDrive from '@permaweb/arweave'
 
 const { of, fromPromise } = Async
 
-const WASM64 = {
+let WASM64 = {
   format: "wasm64-unknown-emscripten-draft_2024_02_15",
   memoryLimit: "4294967296"
 }
@@ -41,7 +42,17 @@ export let LATEST = "module"
  * @param {string} aosmodule - module label or txId to wasm binary
  */
 export async function aoslocal(aosmodule = LATEST) {
-
+  WASM64 = Object.assign({}, WASM64, {
+    WeaveDrive: weaveDrive,
+    ARWEAVE: 'https://arweave.net',
+    blockHeight: 1000,
+    spawn: {
+      tags: DEFAULT_ENV.Process.Tags
+    },
+    module: {
+      tags: DEFAULT_ENV.Module.Tags
+    }
+  })
   // const src = source ? pack(source, 'utf-8') : null
 
   const mod = await fetch('https://raw.githubusercontent.com/permaweb/aos/refs/heads/main/package.json')
