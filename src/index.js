@@ -53,6 +53,7 @@ export async function aoslocal(aosmodule = LATEST) {
       tags: DEFAULT_ENV.Module.Tags
     }
   })
+
   // const src = source ? pack(source, 'utf-8') : null
 
   const mod = await fetch('https://raw.githubusercontent.com/permaweb/aos/refs/heads/main/package.json')
