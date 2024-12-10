@@ -3,7 +3,7 @@ import AoLoader from '@permaweb/ao-loader'
 import Async from 'hyper-async'
 import { fetchCheckpoint, getCheckpointTx } from './checkpoint.js'
 import { pack } from './pack-lua.js'
-import weaveDrive from '@permaweb/arweave'
+import weaveDrive from '@permaweb/weavedrive'
 
 const { of, fromPromise } = Async
 
