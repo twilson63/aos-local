@@ -7,13 +7,9 @@ export async function fetchCheckpoint(tx) {
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${tx} : ${response.statusText}`)
     }
-
     const compressedBuffer = await response.arrayBuffer()
-
-    const decompressedBuffer = gunzipSync(Buffer.from(compressedBuffer))
-
+    const decompressedBuffer = gunzipSync(compressedBuffer)
     const arrayBuffer = decompressedBuffer.buffer;
-
     return arrayBuffer
   } catch (err) {
     console.log("Error: ", err)

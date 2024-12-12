@@ -38,6 +38,8 @@ export let SQLITE = "sqlite"
 export let LLAMA = "llama"
 export let LATEST = "module"
 
+let aosHandle = null
+
 /**
  * @param {string} aosmodule - module label or txId to wasm binary
  */
@@ -62,8 +64,11 @@ export async function aoslocal(aosmodule = LATEST) {
 
   const binary = await fetch('https://arweave.net/' + mod).then(res => res.blob()).then(blob => blob.arrayBuffer())
 
+  aosHandle = await AoLoader(binary, WASM64)
+
   // load memory with source
   let memory = null
+
   let updateMemory = (ctx) => {
     memory = ctx.Memory
     return ctx
@@ -88,10 +93,15 @@ export async function aoslocal(aosmodule = LATEST) {
         .map(updateMemory)
         .toPromise(),
     load: (pid) => of(pid)
+      // .map(pid => `https://cu.ao-testnet.xyz/state/${pid}`)
+      // .chain(fromPromise(url => fetch(url)))
+      // .chain(fromPromise(res => res.arrayBuffer()))
+      // .map(Buffer.from)
       .chain(fromPromise(getCheckpointTx))
       .chain(fromPromise(fetchCheckpoint))
+      .map(Buffer.from)
       .map(m => {
-        memory = m
+        updateMemory({ Memory: m })
         return true
       })
       .toPromise(),
@@ -151,8 +161,12 @@ function formatAOS(ctx) {
 function handle(binary, mem) {
   return (ctx) => {
 
-    return fromPromise(AoLoader)(binary, WASM64)
-      .chain(h => fromPromise(h)(mem, ctx.msg, ctx.env))
+    return fromPromise(aosHandle)(mem, ctx.msg, ctx.env)
+    // return fromPromise(AoLoader)(binary, WASM64)
+    //   .chain(h => {
+    //     console.log('memory: ', mem.byteLength)
+    //     return fromPromise(h)(mem, ctx.msg, ctx.env)
+    //   })
   }
 }
 
