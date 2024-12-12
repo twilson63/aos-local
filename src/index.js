@@ -84,10 +84,10 @@ export async function aoslocal(aosmodule = LATEST) {
   // }
 
   return {
-    src: (srcFile) =>
+    src: (srcFile, env = DEFAULT_ENV) =>
       of(srcFile)
         .map(pack)
-        .map(src => ({ expr: src, env: DEFAULT_ENV }))
+        .map(src => ({ expr: src, env }))
         .map(formatEval)
         .chain(handle(binary, memory))
         .map(updateMemory)
