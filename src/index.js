@@ -124,15 +124,15 @@ export async function aoslocal(aosmodule = LATEST) {
 function formatEval(ctx) {
   ctx.msg = {
     Id: "MESSAGE_ID",
-    Target: "TEST_PROCESS_ID",
-    Owner: "OWNER",
+    Target: ctx.env?.Process?.Id || "TEST_PROCESS_ID",
+    Owner: ctx.env?.Process?.Owner || "OWNER",
     Data: ctx.expr,
     Tags: [
       { name: "Action", value: "Eval" }
     ],
-    From: "OWNER",
+    From: ctx.env?.Process.Owner || "OWNER",
     Timestamp: Date.now().toString(),
-    Module: "MODULE",
+    Module: ctx.env?.Module?.Id || "MODULE",
     ["Block-Height"]: "1"
   }
 

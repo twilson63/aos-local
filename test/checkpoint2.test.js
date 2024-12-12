@@ -11,13 +11,7 @@ async function main() {
 
   await aos.load(PROCESS)
 
-  const result = await aos.send({
-    Target: "1OEAToQGhSKV76oa1MFIGZ9bYxCJoxpXqtksApDdcu8",
-    Owner: "bUPyN5S1oR44mG1AQ51qgSZPmv985RiMqFiB3q9tUZU",
-    Action: "Eval",
-    Module: "L0R0-HrGcs8az_toOi06jLcBbjU0UsudpqIv9K-jBCw",
-    Data: "Balances['vh-NTHVvlKZqRxc8LyyTNok65yQ55a_PJ1zWLb9G2JI']"
-  }, {
+  const Env = {
     Process: {
       Id: "1OEAToQGhSKV76oa1MFIGZ9bYxCJoxpXqtksApDdcu8",
       Owner: "bUPyN5S1oR44mG1AQ51qgSZPmv985RiMqFiB3q9tUZU",
@@ -36,11 +30,19 @@ async function main() {
         { name: "Type", value: "Module" },
       ]
     }
-  }).catch(err => {
+  }
+  const result = await aos.eval("dbAdmin:tables()", Env)
+  // const result = await aos.send({
+  //   Target: "1OEAToQGhSKV76oa1MFIGZ9bYxCJoxpXqtksApDdcu8",
+  //   Owner: "bUPyN5S1oR44mG1AQ51qgSZPmv985RiMqFiB3q9tUZU",
+  //   Action: "Eval",
+  //   Module: "L0R0-HrGcs8az_toOi06jLcBbjU0UsudpqIv9K-jBCw",
+  //   Data: "Balances['vh-NTHVvlKZqRxc8LyyTNok65yQ55a_PJ1zWLb9G2JI']"
+  // }, Env).catch(err => {
 
-    console.log(err)
-    return { Output: { data: '1234' } }
-  })
+  //   console.log(err)
+  //   return { Output: { data: '1234' } }
+  // })
   //console.log(result)
   console.log(result.Output.data)
 
