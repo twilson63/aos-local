@@ -148,6 +148,7 @@ function formatAOS(ctx) {
     Module: "MODULE",
     ["Block-Height"]: "1",
     From: ctx.msg?.From || ctx.msg?.Owner || DEFAULT_ENV.Process.Owner,
+    Timestamp: (new Date().getTime()).toString(),
     Tags: Object
       .keys(ctx.msg)
       .filter(k => !["Target", "Owner", "Data", "Anchor", "Tags"].includes(k))
