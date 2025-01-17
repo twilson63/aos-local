@@ -9,7 +9,7 @@ const { of, fromPromise } = Async
 
 let WASM64 = {
   format: "wasm64-unknown-emscripten-draft_2024_02_15",
-  memoryLimit: "4294967296"
+  memoryLimit: "17179869184"
 }
 
 const DEFAULT_ENV = {
