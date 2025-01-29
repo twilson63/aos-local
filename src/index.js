@@ -105,6 +105,14 @@ export async function aoslocal(aosmodule = LATEST) {
         return true
       })
       .toPromise(),
+    loadByModule: (module) => of(module)
+      .chain(fromPromise(fetchCheckpoint))
+      .map(Buffer.from)
+      .map(m => {
+        updateMemory({ Memory: m })
+        return true
+      })
+      .toPromise(),
     eval: (expr, env = DEFAULT_ENV) => of({ expr, env })
       .map(formatEval)
       .chain(handle(binary, memory))
