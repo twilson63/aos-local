@@ -7,7 +7,7 @@
   "author": "Tom Wilson <tom@hyper.io>",
   "license": "MIT",
   "dependencies": {
-    "@permaweb/ao-loader": "^0.0.43",
+    "@permaweb/ao-loader": "^0.0.47",
     "@permaweb/weavedrive": "^0.0.16",
     "hyper-async": "^1.1.2"
   },
