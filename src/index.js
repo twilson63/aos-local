@@ -43,16 +43,16 @@ let aosHandle = null
 /**
  * @param {string} aosmodule - module label or txId to wasm binary
  */
-export async function aoslocal(aosmodule = LATEST) {
+export async function aoslocal(aosmodule = LATEST, env) {
   WASM64 = Object.assign({}, WASM64, {
     WeaveDrive: weaveDrive,
     ARWEAVE: 'https://arweave.net',
     blockHeight: 1000,
     spawn: {
-      tags: DEFAULT_ENV.Process.Tags
+      tags: env?.Process?.Tags ?? DEFAULT_ENV.Process.Tags
     },
     module: {
-      tags: DEFAULT_ENV.Module.Tags
+      tags: env?.Process?.Tags ?? DEFAULT_ENV.Module.Tags
     }
   })
 
@@ -74,14 +74,14 @@ export async function aoslocal(aosmodule = LATEST) {
     return ctx
   }
 
-  // load src
-  // if (src) {
-  //   await of({ expr: src, env: DEFAULT_ENV })
-  //     .map(formatEval)
-  //     .chain(handle(binary, memory))
-  //     .map(updateMemory)
-  //     .toPromise()
-  // }
+  // load process message
+  //if (src) {
+  await of({ msg: DEFAULT_ENV.Process, env: env ?? DEFAULT_ENV })
+    .map(formatAOS)
+    .chain(handle(binary, memory))
+    .map(updateMemory)
+    .toPromise()
+  //}
 
   return {
     src: (srcFile, env = DEFAULT_ENV) =>
