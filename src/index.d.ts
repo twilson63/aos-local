@@ -15,7 +15,7 @@ export interface AOSLocal {
   src: (srcFile: string, env?: Environment) => Promise<HandleResponse>;
   load: (pid: string) => Promise<void>;
   eval: (expr: string, env?: Environment) => Promise<HandleResponse>;
-  send: (msg: string, env?: Environment) => Promise<HandleResponse>;
+  send: (msg: Record<string, string>, env?: Environment) => Promise<HandleResponse>;
 }
 
 export function aoslocal(
