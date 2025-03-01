@@ -3,6 +3,7 @@
   "name": "@permaweb/loco",
   "version": "0.0.16",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "repository": "https://github.com/twilson63/aos-local.git",
   "author": "Tom Wilson <tom@hyper.io>",
   "license": "MIT",
