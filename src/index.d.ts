@@ -1,8 +1,8 @@
 import type { Environment as AoEnvironment, Tag, HandleResponse } from "@permaweb/ao-loader";
 
-export let SQLITE = "sqlite";
-export let LLAMA = "llama";
-export let LATEST = "module";
+export let SQLITE: "sqlite";
+export let LLAMA: "llama";
+export let LATEST: "module";
 
 export interface Environment extends AoEnvironment {
   Module: {
@@ -19,6 +19,6 @@ export interface AOSLocal {
 }
 
 export function aoslocal(
-  aosmodule: "sqlite" | "llama" | "module" = LATEST,
+  aosmodule: "sqlite" | "llama" | "module",
   env?: Environment
-): Promise<Local>;
+): Promise<AOSLocal>;
