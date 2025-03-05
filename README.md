@@ -15,6 +15,24 @@ const result = await aos.eval("1 + 1")
 console.log(result.Output.data)
 ```
 
+## Load from any Checkpoint
+
+```js
+import { aoslocal } from '@permaweb/loco'
+
+async function main() {
+  const aos = await aoslocal("gX3nbh_cCkxuZAhCwA2XiAMRrjQMHYFInPN5YVQhnfk")
+  await aos.asOwner("Q9mnzqVuiEsCPcR_NrmqHnK5Foz4DnCFcVsB9nHh9yk")
+  await aos.fromCheckpoint("hLaYFmwQkP4Fe5xVaE2OBxFyrLnD9LnCGg-toftabL0")
+  const result = await aos.eval('1 + 1')
+  console.log(result)
+}
+
+main()
+```
+
+
+
 ## API
 
 ### src(srcFile: String, [env] : { Process, Module })
