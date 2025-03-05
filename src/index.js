@@ -4,6 +4,7 @@ import Async from 'hyper-async'
 import { fetchCheckpoint, getCheckpointTx } from './checkpoint.js'
 import { pack } from './pack-lua.js'
 import weaveDrive from '@permaweb/weavedrive'
+import { loadEnv } from './load-env.js'
 
 const { of, fromPromise } = Async
 
@@ -12,7 +13,7 @@ let WASM64 = {
   memoryLimit: "17179869184"
 }
 
-const DEFAULT_ENV = {
+let DEFAULT_ENV = {
   Process: {
     Id: "TEST_PROCESS_ID",
     Tags: [
@@ -84,6 +85,11 @@ export async function aoslocal(aosmodule = LATEST, env) {
   //}
 
   return {
+    asOwner: async (pid) => {
+      DEFAULT_ENV = await loadEnv(pid)
+      // use pid to get the process tags and module tags to set as env
+      return true
+    },
     src: (srcFile, env = DEFAULT_ENV) =>
       of(srcFile)
         .map(pack)
@@ -92,6 +98,15 @@ export async function aoslocal(aosmodule = LATEST, env) {
         .chain(handle(binary, memory))
         .map(updateMemory)
         .toPromise(),
+    fromCheckpoint: (cid) => of(cid)
+      .chain(fromPromise(fetchCheckpoint))
+      .map(Buffer.from)
+      .map(m => {
+        updateMemory({ Memory: m })
+        return true
+      })
+
+      .toPromise(),
     load: (pid) => of(pid)
       // .map(pid => `https://cu.ao-testnet.xyz/state/${pid}`)
       // .chain(fromPromise(url => fetch(url)))
@@ -107,6 +122,7 @@ export async function aoslocal(aosmodule = LATEST, env) {
       .toPromise(),
     eval: (expr, env = DEFAULT_ENV) => of({ expr, env })
       .map(formatEval)
+      .map(ctx => (console.log(ctx), ctx))
       .chain(handle(binary, memory))
       .map(updateMemory)
       .toPromise()
