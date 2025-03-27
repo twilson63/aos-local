@@ -122,7 +122,7 @@ export async function aoslocal(aosmodule = LATEST, env) {
       .toPromise(),
     eval: (expr, env = DEFAULT_ENV) => of({ expr, env })
       .map(formatEval)
-      .map(ctx => (console.log(ctx), ctx))
+      //.map(ctx => (console.log(ctx), ctx))
       .chain(handle(binary, memory))
       .map(updateMemory)
       .toPromise()
