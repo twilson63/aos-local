@@ -1,19 +1,37 @@
 # AOS Local Module
 
-A module that can be used to run commands against aos instances in a local environment. The main purpose of this module is to be used when writing integration tests for aos.
+AOS Local enables developers to load AO processes locally for development and troubleshooting or data/state extraction.
 
-## Usage
+> NOTE: you need to run using the `--experimental-wasm-memory64` flag
+
+## Use Cases
+
+* TDD - Test Drive Development
+* Inspecting/Troubleshooting processes locally
+* Data/State Extraction
+
+## Basic Usage
 
 ```js
 import fs from 'fs'
-import { aoslocal, SQLITE } from '@permaweb/loco'
+import { aoslocal } from '@permaweb/loco'
 const src = './src/main.lua'
-const aos = await aoslocal(SQLITE)
-
-const result = await aos.eval("1 + 1")
-
-console.log(result.Output.data)
+const aos = await aoslocal()
+// load source into local process
+await aos.src(src)
+// evalutate any lua expression
+await aos.eval("Count = 1 + 1")
+// send a message
+const { Output } = await aos.send({Action = "Eval", Data = "Count"})
+console.log(Output.data)
 ```
+
+```bash
+node --experimental-wasm-memory64 index.js
+```
+
+aoslocal creates an aos instance locally that you can use an aos console like api to interact with, while the memory gets passed
+to each new call.
 
 ## Load from any Checkpoint
 
