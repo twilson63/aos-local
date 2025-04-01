@@ -9,7 +9,8 @@
   "dependencies": {
     "@permaweb/ao-loader": "^0.0.47",
     "@permaweb/weavedrive": "^0.0.16",
-    "hyper-async": "^1.1.2"
+    "hyper-async": "^1.1.2",
+    "ramda": "^0.30.1"
   },
   "scripts": {
     "start": "node --experimental-wasm-memory64 test/checkpoint2.test.js"
