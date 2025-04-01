@@ -5,6 +5,7 @@ import { fetchCheckpoint, getCheckpointTx } from './checkpoint.js'
 import { pack } from './pack-lua.js'
 import weaveDrive from '@permaweb/weavedrive'
 import { loadEnv } from './load-env.js'
+import { mergeDeepRight } from 'ramda'
 
 const { of, fromPromise } = Async
 
@@ -90,10 +91,10 @@ export async function aoslocal(aosmodule = LATEST, env) {
       // use pid to get the process tags and module tags to set as env
       return true
     },
-    src: (srcFile, env = DEFAULT_ENV) =>
+    src: (srcFile, env = {}) =>
       of(srcFile)
         .map(pack)
-        .map(src => ({ expr: src, env }))
+        .map(src => ({ expr: src, env: mergeDeepRight(DEFAULT_ENV, env) }))
         .map(formatEval)
         .chain(handle(binary, memory))
         .map(updateMemory)
@@ -120,14 +121,14 @@ export async function aoslocal(aosmodule = LATEST, env) {
         return true
       })
       .toPromise(),
-    eval: (expr, env = DEFAULT_ENV) => of({ expr, env })
+    eval: (expr, env = {}) => of({ expr, env: mergeDeepRight(DEFAULT_ENV, env) })
       .map(formatEval)
       //.map(ctx => (console.log(ctx), ctx))
       .chain(handle(binary, memory))
       .map(updateMemory)
       .toPromise()
     ,
-    send: (msg, env = DEFAULT_ENV) => of({ msg, env })
+    send: (msg, env = {}) => of({ msg, env: mergeDeepRight(DEFAULT_ENV, env) })
       .map(formatAOS)
       .chain(handle(binary, memory))
       .map(updateMemory)

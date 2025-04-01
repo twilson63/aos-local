@@ -1,6 +1,8 @@
 import { aoslocal, SQLITE } from '../src/index.js'
+import { test } from 'node:test'
+import * as assert from 'node:assert'
 
-async function main() {
+test('basic', async () => {
   try {
     const aos = await aoslocal(SQLITE)
     await aos.src("./test/example.lua")
@@ -11,11 +13,9 @@ async function main() {
     //   Data: "Hello World"
     // })
     const result = await aos.eval("Hello('bill')")
-    console.log(result.Output.data)
+    assert.equal(result.Output.data, 'Bonjour bill')
 
   } catch (e) {
     console.log(e)
   }
-}
-
-main()
+})
