@@ -13,6 +13,6 @@
     "ramda": "^0.30.1"
   },
   "scripts": {
-    "start": "node --experimental-wasm-memory64 test/checkpoint2.test.js"
+    "test": "node --test --experimental-wasm-memory64"
   }
 }

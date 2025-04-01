@@ -91,10 +91,10 @@ export async function aoslocal(aosmodule = LATEST, env) {
       // use pid to get the process tags and module tags to set as env
       return true
     },
-    src: (srcFile, env = DEFAULT_ENV) =>
+    src: (srcFile, env = {}) =>
       of(srcFile)
         .map(pack)
-        .map(src => ({ expr: src, env }))
+        .map(src => ({ expr: src, env: mergeDeepRight(DEFAULT_ENV, env) }))
         .map(formatEval)
         .chain(handle(binary, memory))
         .map(updateMemory)
