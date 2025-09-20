@@ -31,7 +31,7 @@ query {
       })
     })
     if (!response.ok) {
-      throw new Error(`Could not fetch Tx: ${pid}`)
+      throw new Error(`Could not fetch Tx: ${tx}`)
     }
     const result = await response.json()
     //console.log(result)
