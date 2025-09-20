@@ -1,0 +1,22 @@
+# AGENTS Guide for aos-local
+- Build: No build step; ESM runs directly from `src/`.
+- Node: Use Node 20+; always pass `--experimental-wasm-memory64`.
+- Test all: `npm test` (runs `node --test --experimental-wasm-memory64`).
+- Single file: `npm test -- test/index.test.js` or `node --test --experimental-wasm-memory64 test/index.test.js`.
+- Single test name: add `--test-name-pattern="basic"` (with or without file path).
+- Tip: set `NODE_OPTIONS="--experimental-wasm-memory64"` to avoid repeating.
+- New API: `fromState(txId)` fetches state from `https://cu.ao-testnet.xyz/state/${txId}` and caches `<txId>.bin`.
+- Test tip: mock only the state endpoint in tests; allow wasm binary to load normally to avoid instantiate errors.
+- Lint: none configured; do not add linters without request.
+- Imports: ESM only; built-ins, third-party, then relative; include `.js` in local imports.
+- Exports: prefer named exports; constants UPPER_SNAKE_CASE; functions camelCase.
+- Formatting: 2-space indent, no semicolons, prefer single quotes; keep lines <100 chars.
+- Types: Use JSDoc (`@typedef`, `@param`, `@returns`) as in `src/pack-lua.js`; no TypeScript.
+- Errors: Check `res.ok`; include context in thrown Errors; avoid swallowing in tests.
+- Async: Prefer async/await; use `hyper-async` where code already does.
+- Naming: Descriptive verbs for functions; PascalCase reserved for classes.
+- Files: Source in `src/`; tests in `test/` with `*.test.js`; keep ESM extensions.
+- External fetch: Some tests hit Arweave; keep deterministic and skip flaky work in unit tests.
+- Side effects: Avoid global state; confine unavoidable state to module scope and document.
+- Tooling: No Cursor or Copilot rules present; `.claude/` and `.opencode/` docs impose no constraints.
+- Commits: Keep changes minimal and focused; update README/API docs when behavior changes.

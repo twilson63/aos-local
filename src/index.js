@@ -1,7 +1,7 @@
 import fs from 'fs'
 import AoLoader from '@permaweb/ao-loader'
 import Async from 'hyper-async'
-import { fetchCheckpoint, getCheckpointTx } from './checkpoint.js'
+import { fetchCheckpoint, getCheckpointTx, fetchState } from './checkpoint.js'
 import { pack } from './pack-lua.js'
 import weaveDrive from '@permaweb/weavedrive'
 import { loadEnv } from './load-env.js'
@@ -54,17 +54,26 @@ export async function aoslocal(aosmodule = LATEST, env) {
       tags: env?.Process?.Tags ?? DEFAULT_ENV.Process.Tags
     },
     module: {
-      tags: env?.Process?.Tags ?? DEFAULT_ENV.Module.Tags
+      tags: env?.Module?.Tags ?? DEFAULT_ENV.Module.Tags
     }
   })
 
   // const src = source ? pack(source, 'utf-8') : null
 
-  const mod = await fetch('https://raw.githubusercontent.com/permaweb/aos/refs/heads/main/package.json')
-    .then(res => res.json())
-    .then(result => result.aos[aosmodule] || aosmodule)
+  // Resolve module tx id (or passthrough if aosmodule is already a tx)
+  const pkgRes = await fetch('https://raw.githubusercontent.com/permaweb/aos/refs/heads/main/package.json')
+  if (!pkgRes.ok) {
+    throw new Error(`Failed to fetch AOS package manifest: ${pkgRes.status} ${pkgRes.statusText}`)
+  }
+  const pkgJson = await pkgRes.json()
+  const mod = pkgJson?.aos?.[aosmodule] || aosmodule
 
-  const binary = await fetch('https://arweave.net/' + mod).then(res => res.blob()).then(blob => blob.arrayBuffer())
+  // Fetch wasm binary
+  const binRes = await fetch('https://arweave.net/' + mod)
+  if (!binRes.ok) {
+    throw new Error(`Failed to fetch module binary: ${mod} -> ${binRes.status} ${binRes.statusText}`)
+  }
+  const binary = await binRes.blob().then(blob => blob.arrayBuffer())
 
   aosHandle = await AoLoader(binary, WASM64)
 
@@ -91,6 +100,11 @@ export async function aoslocal(aosmodule = LATEST, env) {
       // use pid to get the process tags and module tags to set as env
       return true
     },
+    fromOwner: async (txOrPid) => {
+      const pid = await getProcessIdFromTx(txOrPid) || txOrPid
+      DEFAULT_ENV = await loadEnv(pid)
+      return true
+    },
     src: (srcFile, env = {}) =>
       of(srcFile)
         .map(pack)
@@ -106,7 +120,14 @@ export async function aoslocal(aosmodule = LATEST, env) {
         updateMemory({ Memory: m })
         return true
       })
-
+      .toPromise(),
+    fromState: (tx) => of(tx)
+      .chain(fromPromise(fetchState))
+      .map(Buffer.from)
+      .map(m => {
+        updateMemory({ Memory: m })
+        return true
+      })
       .toPromise(),
     load: (pid) => of(pid)
       // .map(pid => `https://cu.ao-testnet.xyz/state/${pid}`)
@@ -174,6 +195,24 @@ function formatAOS(ctx) {
   //console.log(aoMsg)
   ctx.msg = aoMsg
   return ctx
+}
+
+async function getProcessIdFromTx(tx) {
+  try {
+    const res = await fetch('https://arweave-search.goldsky.com/graphql', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: `query { transactions(ids: ["${tx}"]) { edges { node { id tags { name value } } } } }`
+      })
+    })
+    if (!res.ok) return undefined
+    const json = await res.json()
+    const tags = json?.data?.transactions?.edges?.[0]?.node?.tags || []
+    return tags.find(t => t.name === 'Process')?.value
+  } catch {
+    return undefined
+  }
 }
 
 function handle(binary, mem) {
